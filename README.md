@@ -46,16 +46,18 @@ classDiagram
     }
 
     class GeoHash {
-        + coordinate: GeoHashCoordinate2D
         + binary: String
-        + decimal: Int
         + geoHash: String
         + precision: GeoHashPrecision
+        + latitudeBits: [Int]
+        + longitudeBits: [Int]
+        + init(latitude: Double, longitude: Double, precision: GeoHashPrecision)
+        + init(binary: String, precision: GeoHashPrecision)
+        + init(geoHash: String)
     }
     class GeoHashCoordinate2D {
-        + latitudeBinary: String
-        + longitudeBinary: String
-        + precision: GeoHashPrecision
+        + latitude: Double
+        + longitude: Double
     }
 ```
 

@@ -9,7 +9,7 @@
 ///
 /// This data structure is used to store GeoHashes and their relations.
 public struct GeoHashCluster: Sendable, Hashable {
-    private var clusters: [GeoHashPrecision: Set<GeoHash>] = [:]
+    private var clusters: [GeoHashPrecision: [GeoHash]] = [:]
 
     public init() {
         clusters = [:]
