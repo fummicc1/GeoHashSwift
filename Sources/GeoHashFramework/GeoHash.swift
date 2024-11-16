@@ -4,7 +4,7 @@
 import Foundation
 
 public struct GeoHash: Sendable, Hashable {
-    public private(set) var precision: GeoHashPrecision
+    public private(set) var precision: GeoHashBitsPrecision
     public private(set) var binary: String
 
     /// Base32 characters used to hash
@@ -19,7 +19,7 @@ public struct GeoHash: Sendable, Hashable {
     /// - Parameter value: A string that contains only "0" or "1".
     public init(
         binary: String,
-        precision: GeoHashPrecision = .mid
+        precision: GeoHashBitsPrecision = .mid
     ) {
         precondition(
             binary.allSatisfy({
@@ -39,7 +39,7 @@ public struct GeoHash: Sendable, Hashable {
     public init(
         latitude: Double,
         longitude: Double,
-        precision: GeoHashPrecision = .mid
+        precision: GeoHashBitsPrecision = .mid
     ) {
         precondition(
             latitude >= -90 && latitude <= 90,
@@ -62,7 +62,7 @@ public struct GeoHash: Sendable, Hashable {
         )
     }
 
-    public init(geoHash: String, precision: GeoHashPrecision = .mid) {
+    public init(geoHash: String, precision: GeoHashBitsPrecision = .mid) {
         self.init(
             binary: Self.makeBinary(
                 from: geoHash,
@@ -77,7 +77,7 @@ public struct GeoHash: Sendable, Hashable {
 extension GeoHash {
     static func makeBinary(
         from geoHash: String,
-        precision: GeoHashPrecision
+        precision: GeoHashBitsPrecision
     ) -> String {
         var binary = ""
 
@@ -98,7 +98,7 @@ extension GeoHash {
         return binary
     }
 
-    static func makeBinary(from coordinate: GeoHashCoordinate2D, precision: GeoHashPrecision)
+    static func makeBinary(from coordinate: GeoHashCoordinate2D, precision: GeoHashBitsPrecision)
         -> String
     {
         let latitude = coordinate.latitude

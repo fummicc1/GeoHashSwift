@@ -12,26 +12,26 @@ import Testing
 struct GeoHashTests {
     @Test
     func makeGeoHashFromBinary() async throws {
-        let input = "0110101001101010"
+        let input = "01101010011010100110"
         let geoHash = GeoHash(
             binary: input,
-            precision: .exact(digits: 16)
+            precision: .exact(digits: 20)
         )
-        #expect(geoHash.geoHash == "e9p0")
-        #expect(geoHash.geoHash.count == input.count / 4)
+        #expect(geoHash.geoHash == "e9p6")
+        #expect(geoHash.geoHash.count == input.count / 5)
     }
 
     @Test
     func makeFromBinary() async throws {
-        let input = "0110101001101010"
+        let input = "01101010011010100110"
 
-        let expectedLat = "10001000"
-        let expectedLng = "01110111"
+        let expectedLat = "1000100010"
+        let expectedLng = "0111011101"
 
         let geoHash = GeoHash(
             binary: input,
             precision: .exact(
-                digits: 16
+                digits: 20
             )
         )
         #expect(geoHash.latitudeBits == expectedLat)
@@ -45,10 +45,10 @@ struct GeoHashTests {
 
         let geoHash = GeoHash(latitude: lat, longitude: lng)
         #expect(
-            geoHash.binary == "11101101000011100110110101011111"
+            geoHash.binary == "1110110100001110011011010101111110001101"
         )
         #expect(
-            geoHash.geoHash == "xn76urs"
+            geoHash.geoHash == "xn76urwe"
         )
     }
 }
