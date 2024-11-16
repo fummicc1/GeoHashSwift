@@ -52,4 +52,28 @@ struct GeoHashTests {
             geoHash.geoHash == "xn76urwe"
         )
     }
+    
+    @Test
+    func getBounds() async throws {
+        let actual = GeoHash.getBound(with: .exact(digits: 0))
+        let expected = [
+            GeoHashCoordinate2D(
+                latitude: 90.0,
+                longitude: -180.0
+            ),
+            GeoHashCoordinate2D(
+                latitude: 90.0,
+                longitude: 180.0
+            ),
+            GeoHashCoordinate2D(
+                latitude: -90.0,
+                longitude: 180.0
+            ),
+            GeoHashCoordinate2D(
+                latitude: -90.0,
+                longitude: -180.0
+            )
+        ]
+        #expect(actual == expected)
+    }
 }

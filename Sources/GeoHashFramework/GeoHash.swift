@@ -5,12 +5,13 @@ import Foundation
 
 public struct GeoHash: Sendable, Hashable {
     public private(set) var precision: GeoHashBitsPrecision
+    public private(set) var coordinate: GeoHashCoordinate2D
     public private(set) var binary: String
 
     /// Base32 characters used to hash
     ///
     // a and o are omitted
-    private static let base32Chars = "0123456789bcdefghjkmnpqrstuvwxyz"
+    package static let base32Chars = "0123456789bcdefghjkmnpqrstuvwxyz"
 
     /// Create a GeoHash from a string.
     ///
@@ -34,6 +35,10 @@ public struct GeoHash: Sendable, Hashable {
         }
         self.binary = binary
         self.precision = precision
+        self.coordinate = GeoHashCoordinate2D(
+            binary: binary,
+            precision: precision
+        )
     }
 
     public init(
@@ -203,4 +208,130 @@ extension GeoHash {
         }
         return hash
     }
+
+    public static func getBound(with precision: GeoHashBitsPrecision) -> [GeoHashCoordinate2D] {
+        // Initial: BottomLeft in zoom-level 0
+        let baseGeoCoordinate = GeoHash(
+            binary: String(repeating: "0", count: precision.rawValue),
+            precision: precision
+        ).coordinate
+
+        let latitudeBits = precision.rawValue / 2
+        let longitudeBits = (precision.rawValue + 1) / 2
+        
+        let latitudeRange = 180.0  // 90 - (-90)
+        let latitudeDelta = latitudeRange / pow(2.0, Double(latitudeBits))
+
+        let longitudeRange = 360.0  // 180 - (-180)
+        let longitudeDelta = longitudeRange / pow(2.0, Double(longitudeBits))
+
+        let longitude = baseGeoCoordinate.longitude
+        let latitude = baseGeoCoordinate.latitude
+
+        let topLeft = GeoHashCoordinate2D(
+            latitude: latitude + latitudeDelta,
+            longitude: longitude
+        )
+        let topRight = GeoHashCoordinate2D(
+            latitude: latitude + latitudeDelta,
+            longitude: longitude + longitudeDelta
+        )
+        let bottomRight = GeoHashCoordinate2D(
+            latitude: latitude,
+            longitude: longitude + longitudeDelta
+        )
+        let bottomLeft = GeoHashCoordinate2D(
+            latitude: latitude,
+            longitude: longitude
+        )
+
+        return [topLeft, topRight, bottomRight, bottomLeft]
+    }
+
+    public static func getBounds(with precision: GeoHashBitsPrecision) -> [[GeoHashCoordinate2D]] {
+        let bound = getBound(with: precision)
+
+        var topLeft = bound[0]
+        var topRight = bound[1]
+        var bottomRight = bound[2]
+        var bottomLeft = bound[3]
+
+        let latitudeDelta = topLeft.latitude - bottomLeft.latitude
+        let longitudeDelta = topRight.longitude - topLeft.longitude
+
+        var ret: [[GeoHashCoordinate2D]] = []
+
+        // scan by sliding window
+        while true {
+            // only contains top-left point
+            var row: [GeoHashCoordinate2D] = []
+
+            while topLeft.longitude <= 180.0 {
+                row.append(topLeft)
+
+                topLeft = GeoHashCoordinate2D(
+                    latitude: topLeft.latitude,
+                    longitude: topLeft.longitude + longitudeDelta
+                )
+                topRight = GeoHashCoordinate2D(
+                    latitude: topRight.latitude,
+                    longitude: topRight.longitude + longitudeDelta
+                )
+                bottomLeft = GeoHashCoordinate2D(
+                    latitude: bottomLeft.latitude,
+                    longitude: bottomLeft.longitude + longitudeDelta
+                )
+                bottomRight = GeoHashCoordinate2D(
+                    latitude: bottomRight.latitude,
+                    longitude: bottomRight.longitude + longitudeDelta
+                )
+            }
+
+            // Add current row to result
+            // Append all rectangle points
+            ret.append(contentsOf:
+                row.map { topLeft in
+                    [
+                        topLeft,
+                        GeoHashCoordinate2D(
+                            latitude: topLeft.latitude,
+                            longitude: topLeft.longitude + longitudeDelta
+                        ),
+                        GeoHashCoordinate2D(
+                            latitude: topLeft.latitude - latitudeDelta,
+                            longitude: topLeft.longitude + longitudeDelta
+                        ),
+                        GeoHashCoordinate2D(
+                            latitude: topLeft.latitude - latitudeDelta,
+                            longitude: topLeft.longitude
+                        ),
+                    ]
+                }
+            )
+            
+            // Move to next row
+            topLeft = GeoHashCoordinate2D(
+                latitude: topLeft.latitude - latitudeDelta,
+                longitude: -180.0
+            )
+            topRight = GeoHashCoordinate2D(
+                latitude: topRight.latitude - latitudeDelta,
+                longitude: -180.0 + longitudeDelta
+            )
+            bottomLeft = GeoHashCoordinate2D(
+                latitude: bottomLeft.latitude - latitudeDelta,
+                longitude: -180.0
+            )
+            bottomRight = GeoHashCoordinate2D(
+                latitude: bottomRight.latitude - latitudeDelta,
+                longitude: -180.0 + longitudeDelta
+            )
+
+            if topLeft.latitude < -90.0 {
+                break
+            }
+        }
+        return ret
+    }
+
 }
