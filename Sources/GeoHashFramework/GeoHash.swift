@@ -252,12 +252,9 @@ extension GeoHash {
         let bound = getBound(with: precision)
 
         var topLeft = bound[0]
-        var topRight = bound[1]
-        var bottomRight = bound[2]
-        var bottomLeft = bound[3]
 
-        let latitudeDelta = topLeft.latitude - bottomLeft.latitude
-        let longitudeDelta = topRight.longitude - topLeft.longitude
+        let latitudeDelta = topLeft.latitude - bound[3].latitude
+        let longitudeDelta = bound[1].longitude - topLeft.longitude
 
         var ret: [[GeoHashCoordinate2D]] = []
 
@@ -266,24 +263,12 @@ extension GeoHash {
             // only contains top-left point
             var row: [GeoHashCoordinate2D] = []
 
-            while topLeft.longitude <= 180.0 {
+            while topLeft.longitude + longitudeDelta <= 180.0 {
                 row.append(topLeft)
 
                 topLeft = GeoHashCoordinate2D(
                     latitude: topLeft.latitude,
                     longitude: topLeft.longitude + longitudeDelta
-                )
-                topRight = GeoHashCoordinate2D(
-                    latitude: topRight.latitude,
-                    longitude: topRight.longitude + longitudeDelta
-                )
-                bottomLeft = GeoHashCoordinate2D(
-                    latitude: bottomLeft.latitude,
-                    longitude: bottomLeft.longitude + longitudeDelta
-                )
-                bottomRight = GeoHashCoordinate2D(
-                    latitude: bottomRight.latitude,
-                    longitude: bottomRight.longitude + longitudeDelta
                 )
             }
 
@@ -314,20 +299,7 @@ extension GeoHash {
                 latitude: topLeft.latitude - latitudeDelta,
                 longitude: -180.0
             )
-            topRight = GeoHashCoordinate2D(
-                latitude: topRight.latitude - latitudeDelta,
-                longitude: -180.0 + longitudeDelta
-            )
-            bottomLeft = GeoHashCoordinate2D(
-                latitude: bottomLeft.latitude - latitudeDelta,
-                longitude: -180.0
-            )
-            bottomRight = GeoHashCoordinate2D(
-                latitude: bottomRight.latitude - latitudeDelta,
-                longitude: -180.0 + longitudeDelta
-            )
-
-            if topLeft.latitude < -90.0 {
+            if topLeft.latitude + latitudeDelta < -90.0 {
                 break
             }
         }
