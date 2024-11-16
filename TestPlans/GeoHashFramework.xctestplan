@@ -12,7 +12,13 @@
 
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "GeoHashFrameworkTests",
+        "name" : "GeoHashFrameworkTests"
+      }
+    }
   ],
   "version" : 1
 }

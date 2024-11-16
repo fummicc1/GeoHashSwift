@@ -4,21 +4,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "geo-hash-swift",
+    name: "GeoHash",
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "geo-hash-swift",
-            targets: ["geo-hash-swift"]),
+            name: "GeoHashFramework",
+            targets: ["GeoHashFramework"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "geo-hash-swift"),
+            name: "GeoHashFramework"
+        ),
         .testTarget(
-            name: "geo-hash-swiftTests",
-            dependencies: ["geo-hash-swift"]
+            name: "GeoHashFrameworkTests",
+            dependencies: ["GeoHashFramework"]
         ),
     ]
 )

@@ -6,12 +6,14 @@
 //
 
 import Testing
-@testable import geo_hash_swift
+@testable import GeoHashFramework
 
 struct GeoHashTests {
     @Test
     func makeGeoHashFromBinary() async throws {
         let input = "0110101001101010"
-        let geoHash = GeoHa
+        let geoHash = GeoHash(binary: input)
+        #expect(geoHash.hex == "6a6a")
+        #expect(geoHash.hex.count == input.count / 4)
     }
 }

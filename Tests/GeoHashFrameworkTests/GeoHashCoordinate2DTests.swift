@@ -1,5 +1,5 @@
 import Testing
-@testable import geo_hash_swift
+@testable import GeoHashFramework
 
 struct GeoHashCoordinate2DTests {
     @Test
