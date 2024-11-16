@@ -218,7 +218,7 @@ extension GeoHash {
 
         let latitudeBits = precision.rawValue / 2
         let longitudeBits = (precision.rawValue + 1) / 2
-        
+
         let latitudeRange = 180.0  // 90 - (-90)
         let latitudeDelta = latitudeRange / pow(2.0, Double(latitudeBits))
 
@@ -251,58 +251,36 @@ extension GeoHash {
     public static func getBounds(with precision: GeoHashBitsPrecision) -> [[GeoHashCoordinate2D]] {
         let bound = getBound(with: precision)
 
-        var topLeft = bound[0]
-
-        let latitudeDelta = topLeft.latitude - bound[3].latitude
-        let longitudeDelta = bound[1].longitude - topLeft.longitude
+        let latitudeDelta = bound[0].latitude - bound[3].latitude
+        let longitudeDelta = bound[1].longitude - bound[0].longitude
 
         var ret: [[GeoHashCoordinate2D]] = []
+        var currentLatitude = 90.0  // Start from the top
 
-        // scan by sliding window
-        while true {
-            // only contains top-left point
-            var row: [GeoHashCoordinate2D] = []
+        // Scan from top to bottom
+        while currentLatitude > -90.0 {
+            var currentLongitude = -180.0
 
-            while topLeft.longitude + longitudeDelta <= 180.0 {
-                row.append(topLeft)
+            // Scan each row from left to right
+            while currentLongitude < 180.0 {
+                let rectangle = [
+                    GeoHashCoordinate2D(latitude: currentLatitude, longitude: currentLongitude),
+                    GeoHashCoordinate2D(
+                        latitude: currentLatitude, longitude: currentLongitude + longitudeDelta),
+                    GeoHashCoordinate2D(
+                        latitude: currentLatitude - latitudeDelta,
+                        longitude: currentLongitude + longitudeDelta),
+                    GeoHashCoordinate2D(
+                        latitude: currentLatitude - latitudeDelta, longitude: currentLongitude),
+                ]
+                ret.append(rectangle)
 
-                topLeft = GeoHashCoordinate2D(
-                    latitude: topLeft.latitude,
-                    longitude: topLeft.longitude + longitudeDelta
-                )
+                currentLongitude += longitudeDelta
             }
 
-            // Add current row to result
-            // Append all rectangle points
-            ret.append(contentsOf:
-                row.map { topLeft in
-                    [
-                        topLeft,
-                        GeoHashCoordinate2D(
-                            latitude: topLeft.latitude,
-                            longitude: topLeft.longitude + longitudeDelta
-                        ),
-                        GeoHashCoordinate2D(
-                            latitude: topLeft.latitude - latitudeDelta,
-                            longitude: topLeft.longitude + longitudeDelta
-                        ),
-                        GeoHashCoordinate2D(
-                            latitude: topLeft.latitude - latitudeDelta,
-                            longitude: topLeft.longitude
-                        ),
-                    ]
-                }
-            )
-            
-            // Move to next row
-            topLeft = GeoHashCoordinate2D(
-                latitude: topLeft.latitude - latitudeDelta,
-                longitude: -180.0
-            )
-            if topLeft.latitude + latitudeDelta < -90.0 {
-                break
-            }
+            currentLatitude -= latitudeDelta
         }
+
         return ret
     }
 

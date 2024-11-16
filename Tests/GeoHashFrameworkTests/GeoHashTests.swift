@@ -54,7 +54,7 @@ struct GeoHashTests {
     }
     
     @Test
-    func getBounds() async throws {
+    func getBound() async throws {
         let actual = GeoHash.getBound(with: .exact(digits: 0))
         let expected = [
             GeoHashCoordinate2D(
