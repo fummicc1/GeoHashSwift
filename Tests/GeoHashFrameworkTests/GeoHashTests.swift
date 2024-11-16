@@ -13,7 +13,7 @@ struct GeoHashTests {
     func makeGeoHashFromBinary() async throws {
         let input = "0110101001101010"
         let geoHash = GeoHash(binary: input)
-        #expect(geoHash.hex == "6a6a")
-        #expect(geoHash.hex.count == input.count / 4)
+        #expect(geoHash.geoHash == "6a6a")
+        #expect(geoHash.geoHash.count == input.count / 4)
     }
 }

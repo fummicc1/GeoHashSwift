@@ -49,7 +49,7 @@ classDiagram
         + coordinate: GeoHashCoordinate2D
         + binary: String
         + decimal: Int
-        + hex: String
+        + geoHash: String
         + precision: GeoHashPrecision
     }
     class GeoHashCoordinate2D {
@@ -64,6 +64,7 @@ classDiagram
 - User can generate GeoHash from:
   - latitude and longitude
   - binary string
-  - hex string
-- User can retrieve hex (a.k.a geoHash) from `GeoHash` object.
-- User can find if two GeoHash objects are in the same cluster with specified precision.
+  - GeoHash string
+- User can retrieve hash string from `GeoHash` object.
+- User can check if two GeoHash objects are in the same cluster with specified precision.
+- User can fetch GeoHashes in the same cluster with specified GeoHash.

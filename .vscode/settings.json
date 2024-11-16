@@ -13,12 +13,4 @@
     "editor.defaultFormatter": "vknabel.vscode-apple-swift-format",
     "cSpell.words": [],
     "makefile.configureOnOpen": false,
-    "swift.sourcekit-lsp.serverArguments": [
-      "-Xswiftc",
-      "-sdk",
-      "-Xswiftc",
-      "/Applications/Xcode-16.1.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.0.sdk",
-    ],
-    "lldb.library": "/Applications/Xcode-16.1.0.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
-    "lldb.launch.expressions": "native"
 }
