@@ -15,11 +15,15 @@ public struct GeoHashCluster: Sendable, Hashable {
         clusters = [:]
     }
 
-    public func isSame(geoHash1: GeoHash, geoHash2: GeoHash, precision: GeoHashBitsPrecision) -> Bool {
+    public func isSame(geoHash1: GeoHash, geoHash2: GeoHash, precision: GeoHashBitsPrecision)
+        -> Bool
+    {
         fatalError("Not implemented")
     }
 
-    public func mergeIfPossible(geoHash1: GeoHash, geoHash2: GeoHash, precision: GeoHashBitsPrecision) {
+    public func mergeIfPossible(
+        geoHash1: GeoHash, geoHash2: GeoHash, precision: GeoHashBitsPrecision
+    ) {
         fatalError("Not implemented")
     }
 }
