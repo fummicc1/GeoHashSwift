@@ -1,6 +1,14 @@
 import Testing
 @testable import geo_hash_swift
 
-@Test func example() async throws {
-    // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+@Test
+func makeGeoHashFromBinary() async throws {
+    let input = "0110101001101010"
+    
+    let expectedLat = "10001000"
+    let expectedLng = "01110111"
+    
+    let geoHash = GeoHashCoordinate2D(binary: input)
+    #expect(geoHash.latitudeBinary == expectedLat)
+    #expect(geoHash.longitudeBinary == expectedLng)
 }
