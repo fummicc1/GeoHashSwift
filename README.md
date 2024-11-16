@@ -54,6 +54,7 @@ classDiagram
         + init(latitude: Double, longitude: Double, precision: GeoHashPrecision)
         + init(binary: String, precision: GeoHashPrecision)
         + init(geoHash: String)
+        + getBounds(with precision: GeoHashBitsPrecision) -> [[GeoHashCoordinate2D]]
     }
     class GeoHashCoordinate2D {
         + latitude: Double
