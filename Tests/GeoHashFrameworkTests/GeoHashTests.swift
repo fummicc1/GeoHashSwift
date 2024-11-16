@@ -40,6 +40,7 @@ struct GeoHashTests {
 
     @Test
     func makeFromLatLng() async throws {
+        // Tokyo Station
         let lat = 35.681382
         let lng = 139.766084
 

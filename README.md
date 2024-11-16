@@ -2,7 +2,7 @@
 
 GeoHashSwift is a Swift implementation of GeoHash.
 
-by storing GeoHash in a union-find data structure, and store raw data as binary not hex string, improving the accuracy of GeoHash comparison.
+by storing GeoHash in a union-find data structure, and store raw data as binary not 5bits hashed string, improving the accuracy of GeoHash comparison.
 
 ## APIs
 
