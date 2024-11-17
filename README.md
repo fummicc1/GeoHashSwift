@@ -2,7 +2,9 @@
 
 GeoHashSwift is a Swift implementation of GeoHash.
 
-![GeoHashSwift](https://github.com/user-attachments/assets/002c48ce-def2-4f01-bace-6418de0934c3)
+[GeoHashCLI](https://github.com/user-attachments/assets/4d19753f-dc6e-4d26-bdce-14b9963f2dde)
+
+
 
 ## Installation & Usage
 
