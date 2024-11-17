@@ -66,8 +66,10 @@ Usage:
 ```sh
 # Generate GeoHash from latitude and longitude
 swift run geohash 35.681236 139.767125
+> xn76urx6
 # Generate GeoHash from coordinate2d
 swift run geohash --coordinate "35.681236,139.767125"
+> xn76urx6
 ```
 
 ## APIs
