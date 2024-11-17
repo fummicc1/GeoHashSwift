@@ -2,7 +2,71 @@
 
 GeoHashSwift is a Swift implementation of GeoHash.
 
-by storing GeoHash in a union-find data structure, and store raw data as binary not 5bits hashed string, improving the accuracy of GeoHash comparison.
+![GeoHashSwift](https://github.com/user-attachments/assets/002c48ce-def2-4f01-bace-6418de0934c3)
+
+## Installation & Usage
+
+### GeoHashFramework
+
+GeoHashFramework is a framework for GeoHash.
+
+You can use it as a dependency of your project.
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/fummicc1/GeoHashSwift.git", from: "0.0.1")
+]
+```
+
+```swift
+import GeoHashFramework
+
+let geoHash = GeoHash(latitude: 35.681382, longitude: 139.766084, precision: .mid)
+print(geoHash.geoHash) // "xn76urwe"
+```
+
+### GeoHashCLI
+
+GeoHashCLI executable is a CLI tool for GeoHash.
+
+You can use it to generate GeoHash from latitude and longitude.
+
+<!--
+
+- Install via Homebrew (not yet available)
+
+```sh
+brew tap fummicc1/geohash-swift
+brew install geohash-swift
+```
+
+Usage:
+
+```sh
+# Generate GeoHash from latitude and longitude
+geohash 35.681236 139.767125
+# Generate GeoHash from coordinate2d
+geohash --coordinate "35.681236,139.767125"
+```
+
+-->
+
+- Install via Swift Package Manager
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/fummicc1/GeoHashSwift.git", from: "0.0.1")
+]
+```
+
+Usage:
+
+```sh
+# Generate GeoHash from latitude and longitude
+swift run geohash 35.681236 139.767125
+# Generate GeoHash from coordinate2d
+swift run geohash --coordinate "35.681236,139.767125"
+```
 
 ## APIs
 

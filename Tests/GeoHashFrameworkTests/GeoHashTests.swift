@@ -52,7 +52,7 @@ struct GeoHashTests {
             geoHash.geoHash == "xn76urwe"
         )
     }
-    
+
     @Test
     func getBound() async throws {
         let actual = GeoHash.getBound(with: .exact(digits: 0))
@@ -72,17 +72,17 @@ struct GeoHashTests {
             GeoHashCoordinate2D(
                 latitude: -90.0,
                 longitude: -180.0
-            )
+            ),
         ]
         #expect(actual == expected)
     }
-    
+
     @Test
     func getBounds() async throws {
         let actual = GeoHash.getBounds(with: .exact(digits: 15))
         let count = actual.reduce(0) { partialResult, bound in
             partialResult + bound.count
         }
-        print(count == 131072) // 2^15 * 4
+        print(count == 131072)  // 2^15 * 4
     }
 }
