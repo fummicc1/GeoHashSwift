@@ -45,8 +45,10 @@ Usage:
 ```sh
 # Generate GeoHash from latitude and longitude
 geohash 35.681236 139.767125
+> xn76urx6
 # Generate GeoHash from coordinate2d
 geohash --coordinate "35.681236,139.767125"
+> xn76urx6
 ```
 
 - Install via Swift Package Manager
