@@ -33,13 +33,11 @@ GeoHashCLI executable is a CLI tool for GeoHash.
 
 You can use it to generate GeoHash from latitude and longitude.
 
-<!--
-
-- Install via Homebrew (not yet available)
+- Install via Homebrew
 
 ```sh
-brew tap fummicc1/geohash-swift
-brew install geohash-swift
+brew tap fummicc1/geohash
+brew install fummicc1/geohash/geohash
 ```
 
 Usage:
@@ -50,8 +48,6 @@ geohash 35.681236 139.767125
 # Generate GeoHash from coordinate2d
 geohash --coordinate "35.681236,139.767125"
 ```
-
--->
 
 - Install via Swift Package Manager
 
