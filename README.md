@@ -71,3 +71,8 @@ classDiagram
 - User can retrieve hash string from `GeoHash` object.
 - User can check if two GeoHash objects are in the same cluster with specified precision.
 - User can fetch GeoHashes in the same cluster with specified GeoHash.
+
+
+## Related Repositories
+
+- [GeoHashDebugView: An example app using GeoHashSwift](https://github.com/fummicc1/GeoHashDebugView)
