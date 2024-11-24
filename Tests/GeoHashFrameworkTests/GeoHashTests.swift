@@ -55,27 +55,34 @@ struct GeoHashTests {
 
     @Test
     func getBound() async throws {
-        let precision = GeoHashBitsPrecision.exact(digits: 0)
-        let actual = GeoHash(
-            binary: String(repeating: "0", count: precision.rawValue),
+        // Tokyo Station
+        let coordinate = GeoHashCoordinate2D(
+            latitude: 35.681382,
+            longitude: 139.766084
+        )
+        let precision = GeoHashBitsPrecision.low
+        let geoHash = GeoHash(
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
             precision: precision
-        ).getBound()
+        )
+        let actual = geoHash.getBound()
         let expected = [
             GeoHashCoordinate2D(
-                latitude: 90.0,
-                longitude: -180.0
+                latitude: 35.687429258303666,
+                longitude: 139.7668385876034
             ),
             GeoHashCoordinate2D(
-                latitude: 90.0,
-                longitude: 180.0
+                latitude: 35.687429258303666,
+                longitude: 139.7778249157284
             ),
             GeoHashCoordinate2D(
-                latitude: -90.0,
-                longitude: 180.0
+                latitude: 35.681936094241166,
+                longitude: 139.7778249157284
             ),
             GeoHashCoordinate2D(
-                latitude: -90.0,
-                longitude: -180.0
+                latitude: 35.681936094241166,
+                longitude: 139.7668385876034
             ),
         ]
         #expect(actual == expected)
@@ -104,7 +111,7 @@ struct GeoHashTests {
             "xn76urwd",
             "xn76urw6",
             "xn76urw7",
-            "xn76urwk"
+            "xn76urwk",
         ]
 
         let geoHash = GeoHash(latitude: lat, longitude: lng)
