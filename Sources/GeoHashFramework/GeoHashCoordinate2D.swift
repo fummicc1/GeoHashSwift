@@ -13,44 +13,41 @@ import Foundation
 public struct GeoHashCoordinate2D: Sendable, Hashable {
     public var latitude: Double
     public var longitude: Double
-    
+
     public init(latitude: Double, longitude: Double) {
         self.latitude = latitude
         self.longitude = longitude
     }
-    
+
     public init(binary: String, precision: GeoHashBitsPrecision) {
-        // 010101010 --> 1111
-        let latitudeBits = binary.enumerated().filter { $0.offset % 2 == 1 }.map { String($0.element) }
-        // 010101010 --> 00000
-        let longitudeBits = binary.enumerated().filter { $0.offset % 2 == 0 }.map { String($0.element) }
-        
-        // 1111 -> 15
-        let latitudePrecision = pow(2, Double(latitudeBits.count))
-        let latitudeDelta = 180.0 / latitudePrecision
-        // 01000 -> 8/15
-        let latitudeIndex = latitudeBits.enumerated().reduce(into: 0.0, { partialResult, value in
-            let (index, bits) = value
-            if bits == "1" {
-                partialResult += Double(1 << index)
-            }
-        }) / latitudePrecision
-        self.latitude = latitudeDelta * latitudeIndex - 90.0
-        
-        // 00000 -> 32
-        let longitudePrecision = pow(2, Double(longitudeBits.count))
-        let longitudeDelta = 360.0 / longitudePrecision
-        // 01000 -> 8/15
-        let longitudeIndex = Double(
-            longitudeBits.enumerated().reduce(into: 0.0, { partialResult, value in
-                let (index, bits) = value
-                if bits == "1" {
-                    partialResult += Double(1 << index)
-                    
-                }
-            })
-        ) / longitudePrecision
-        
-        self.longitude = longitudeDelta * longitudeIndex - 180.0
+        let latitudeBits = binary.enumerated().filter { $0.offset % 2 == 1 }.map {
+            String($0.element)
+        }
+        let longitudeBits = binary.enumerated().filter { $0.offset % 2 == 0 }.map {
+            String($0.element)
+        }
+
+        // referring to: https://github.com/nh7a/Geohash/blob/927b1f402650ab18ee0714cf099122606390646c/Sources/Geohash/Geohash.swift#L45-L54
+        // latitude
+        let latitudeRange = latitudeBits.enumerated().reduce((-90.0, 90.0)) { result, value in
+            let (min, max) = result
+            let mean = Decimal(min + max) / Decimal(2)
+            let (_, bit) = value
+            return bit == "1"
+                ? (NSDecimalNumber(decimal: mean).doubleValue, max)
+                : (min, NSDecimalNumber(decimal: mean).doubleValue)
+        }
+        self.latitude = (latitudeRange.0 + latitudeRange.1) / 2.0
+
+        // longitude
+        let longitudeRange = longitudeBits.enumerated().reduce((-180.0, 180.0)) { result, value in
+            let (min, max) = result
+            let mean = Decimal(min + max) / Decimal(2)
+            let (_, bit) = value
+            return bit == "1"
+                ? (NSDecimalNumber(decimal: mean).doubleValue, max)
+                : (min, NSDecimalNumber(decimal: mean).doubleValue)
+        }
+        self.longitude = (longitudeRange.0 + longitudeRange.1) / 2.0
     }
 }

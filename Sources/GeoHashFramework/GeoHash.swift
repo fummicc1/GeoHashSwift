@@ -224,14 +224,26 @@ extension GeoHash {
         let southWest = combineBits(latitude: south, longitude: west)
 
         return [
-            GeoHash(binary: combineBits(latitude: north, longitude: longitudeBits), precision: precision),
+            GeoHash(
+                binary: combineBits(latitude: north, longitude: longitudeBits),
+                precision: precision
+            ),
             GeoHash(binary: northEast, precision: precision),
-            GeoHash(binary: combineBits(latitude: latitudeBits, longitude: east), precision: precision),
+            GeoHash(
+                binary: combineBits(latitude: latitudeBits, longitude: east),
+                precision: precision
+            ),
             GeoHash(binary: southEast, precision: precision),
-            GeoHash(binary: combineBits(latitude: south, longitude: longitudeBits), precision: precision),
+            GeoHash(
+                binary: combineBits(latitude: south, longitude: longitudeBits),
+                precision: precision
+            ),
             GeoHash(binary: southWest, precision: precision),
-            GeoHash(binary: combineBits(latitude: latitudeBits, longitude: west), precision: precision),
-            GeoHash(binary: northWest, precision: precision)
+            GeoHash(
+                binary: combineBits(latitude: latitudeBits, longitude: west),
+                precision: precision
+            ),
+            GeoHash(binary: northWest, precision: precision),
         ]
     }
 
@@ -240,7 +252,9 @@ extension GeoHash {
         if let decimal = Int(bits, radix: 2) {
             let moved = decimal + delta
             // 11 -> 1110
-            return String(moved, radix: 2)
+            // keep bits length
+            let binary = String(moved, radix: 2)
+            return binary.padding(toLength: bits.count, withPad: "0", startingAt: 0)
         }
         return bits
     }

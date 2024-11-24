@@ -21,7 +21,6 @@ public enum GeoHashBitsPrecision: Sendable, Hashable {
         case .mid: return 8 * 5
         case .high: return 10 * 5
         case .exact(let digits):
-            precondition(digits % 5 == 0)
             return digits
         }
     }
