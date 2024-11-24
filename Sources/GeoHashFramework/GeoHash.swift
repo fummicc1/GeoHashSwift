@@ -263,12 +263,9 @@ extension GeoHash {
         return result
     }
 
-    public static func getBound(with precision: GeoHashBitsPrecision) -> [GeoHashCoordinate2D] {
-        // Initial: BottomLeft in zoom-level 0
-        let baseGeoCoordinate = GeoHash(
-            binary: String(repeating: "0", count: precision.rawValue),
-            precision: precision
-        ).coordinate
+    public func getBound() -> [GeoHashCoordinate2D] {
+        let baseGeoCoordinate = coordinate
+        let precision = precision
 
         let latitudeBits = precision.rawValue / 2
         let longitudeBits = (precision.rawValue + 1) / 2
@@ -303,7 +300,11 @@ extension GeoHash {
     }
 
     public static func getBounds(with precision: GeoHashBitsPrecision) -> [[GeoHashCoordinate2D]] {
-        let bound = getBound(with: precision)
+        // Initial: BottomLeft in zoom-level 0
+        let bound = GeoHash(
+            binary: String(repeating: "0", count: precision.rawValue),
+            precision: precision
+        ).getBound()
 
         let latitudeDelta = bound[0].latitude - bound[3].latitude
         let longitudeDelta = bound[1].longitude - bound[0].longitude

@@ -55,7 +55,11 @@ struct GeoHashTests {
 
     @Test
     func getBound() async throws {
-        let actual = GeoHash.getBound(with: .exact(digits: 0))
+        let precision = GeoHashBitsPrecision.exact(digits: 0)
+        let actual = GeoHash(
+            binary: String(repeating: "0", count: precision.rawValue),
+            precision: precision
+        ).getBound()
         let expected = [
             GeoHashCoordinate2D(
                 latitude: 90.0,
