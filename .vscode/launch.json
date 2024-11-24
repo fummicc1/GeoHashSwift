@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:GeoHashSwift}",
+            "name": "Debug geohash",
+            "program": "${workspaceFolder:GeoHashSwift}/.build/debug/geohash",
+            "preLaunchTask": "swift: Build Debug geohash"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:GeoHashSwift}",
+            "name": "Release geohash",
+            "program": "${workspaceFolder:GeoHashSwift}/.build/release/geohash",
+            "preLaunchTask": "swift: Build Release geohash"
+        }
+    ]
+}

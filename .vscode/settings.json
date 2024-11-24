@@ -13,4 +13,14 @@
     "editor.defaultFormatter": "vknabel.vscode-apple-swift-format",
     "cSpell.words": [],
     "makefile.configureOnOpen": false,
+    "swift.sourcekit-lsp.serverArguments": [
+        "-Xswiftc",
+        "-sdk",
+        "-Xswiftc",
+        "/Applications/Xcode-16.1.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneOS.sdk",
+        "-Xswiftc",
+        "-target",
+        "-Xswiftc",
+        "arm64-apple-ios18.1-simulator",
+    ]
 }

@@ -154,7 +154,7 @@ extension GeoHash {
     }
 }
 
-// MARK: Public getter
+// MARK: Public properties and methods
 extension GeoHash {
     public var latitudeBits: String {
         var lat: String = ""
@@ -207,6 +207,60 @@ extension GeoHash {
             hash += String(Self.base32Chars[index])
         }
         return hash
+    }
+
+    public func getNeighbors() -> [GeoHash] {
+        let latitudeBits = self.latitudeBits
+        let longitudeBits = self.longitudeBits
+
+        let north = add(bits: latitudeBits, by: 1)
+        let south = add(bits: latitudeBits, by: -1)
+        let east = add(bits: longitudeBits, by: 1)
+        let west = add(bits: longitudeBits, by: -1)
+
+        let northEast = combineBits(latitude: north, longitude: east)
+        let northWest = combineBits(latitude: north, longitude: west)
+        let southEast = combineBits(latitude: south, longitude: east)
+        let southWest = combineBits(latitude: south, longitude: west)
+
+        return [
+            GeoHash(binary: combineBits(latitude: north, longitude: longitudeBits), precision: precision),
+            GeoHash(binary: northEast, precision: precision),
+            GeoHash(binary: combineBits(latitude: latitudeBits, longitude: east), precision: precision),
+            GeoHash(binary: southEast, precision: precision),
+            GeoHash(binary: combineBits(latitude: south, longitude: longitudeBits), precision: precision),
+            GeoHash(binary: southWest, precision: precision),
+            GeoHash(binary: combineBits(latitude: latitudeBits, longitude: west), precision: precision),
+            GeoHash(binary: northWest, precision: precision)
+        ]
+    }
+
+    /// Add `delta` to `bits`
+    private func add(bits: String, by delta: Int) -> String {
+        if let decimal = Int(bits, radix: 2) {
+            let moved = decimal + delta
+            // 11 -> 1110
+            return String(moved, radix: 2)
+        }
+        return bits
+    }
+
+    /// Combine `latitude` and `longitude` in bits.
+    private func combineBits(latitude: String, longitude: String) -> String {
+        var result = ""
+        let latArray = Array(latitude)
+        let lngArray = Array(longitude)
+        let maxLength = max(latArray.count, lngArray.count)
+
+        for i in 0..<maxLength {
+            if i < lngArray.count {
+                result.append(lngArray[i])
+            }
+            if i < latArray.count {
+                result.append(latArray[i])
+            }
+        }
+        return result
     }
 
     public static func getBound(with precision: GeoHashBitsPrecision) -> [GeoHashCoordinate2D] {
