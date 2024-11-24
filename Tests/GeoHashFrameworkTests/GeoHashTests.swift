@@ -69,20 +69,20 @@ struct GeoHashTests {
         let actual = geoHash.getBound()
         let expected = [
             GeoHashCoordinate2D(
-                latitude: 35.68634033203125,
-                longitude: 139.7625732421875
+                latitude: 35.68634033203124,
+                longitude: 139.76257324218756
             ),
             GeoHashCoordinate2D(
-                latitude: 35.68634033203125,
-                longitude: 139.7735595703125
+                latitude: 35.68634033203124,
+                longitude: 139.77355957031256
             ),
             GeoHashCoordinate2D(
-                latitude: 35.68084716796875,
-                longitude: 139.7735595703125
+                latitude: 35.68084716796874,
+                longitude: 139.77355957031256
             ),
             GeoHashCoordinate2D(
-                latitude: 35.68084716796875,
-                longitude: 139.7625732421875
+                latitude: 35.68084716796874,
+                longitude: 139.76257324218756
             ),
         ]
         #expect(actual == expected)

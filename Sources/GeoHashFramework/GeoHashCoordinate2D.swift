@@ -31,18 +31,22 @@ public struct GeoHashCoordinate2D: Sendable, Hashable {
         // latitude
         let latitudeRange = latitudeBits.enumerated().reduce((-90.0, 90.0)) { result, value in
             let (min, max) = result
-            let mean = (min + max) / 2.0
+            let mean = Decimal(min + max) / Decimal(2)
             let (_, bit) = value
-            return bit == "1" ? (mean, max) : (min, mean)
+            return bit == "1"
+                ? (NSDecimalNumber(decimal: mean).doubleValue, max)
+                : (min, NSDecimalNumber(decimal: mean).doubleValue)
         }
         self.latitude = (latitudeRange.0 + latitudeRange.1) / 2.0
 
         // longitude
         let longitudeRange = longitudeBits.enumerated().reduce((-180.0, 180.0)) { result, value in
             let (min, max) = result
-            let mean = (min + max) / 2.0
+            let mean = Decimal(min + max) / Decimal(2)
             let (_, bit) = value
-            return bit == "1" ? (mean, max) : (min, mean)
+            return bit == "1"
+                ? (NSDecimalNumber(decimal: mean).doubleValue, max)
+                : (min, NSDecimalNumber(decimal: mean).doubleValue)
         }
         self.longitude = (longitudeRange.0 + longitudeRange.1) / 2.0
     }
