@@ -85,4 +85,26 @@ struct GeoHashTests {
         }
         print(count == 131072)  // 2^15 * 4
     }
+
+    @Test
+    func getNeighbors() async throws {
+        // Tokyo Station
+        let lat = 35.681382
+        let lng = 139.766084
+
+        let expected = [
+            "xn76urws",
+            "xn76urwu",
+            "xn76urwg",
+            "xn76urwf",
+            "xn76urwd",
+            "xn76urw6",
+            "xn76urw7",
+            "xn76urwk"
+        ]
+
+        let geoHash = GeoHash(latitude: lat, longitude: lng)
+        let neighbors = geoHash.getNeighbors()
+        #expect(neighbors.map(\.geoHash) == expected)
+    }
 }
