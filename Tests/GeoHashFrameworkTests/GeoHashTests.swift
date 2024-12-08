@@ -13,27 +13,14 @@ struct GeoHashTests {
     @Test
     func makeGeoHashFromBinary() async throws {
         let input = "01101010011010100110"
+        let expectedLat = "1000100010"
+        let expectedLng = "0111011101"
         let geoHash = GeoHash(
             binary: input,
             precision: .exact(digits: 20)
         )
         #expect(geoHash.geoHash == "e9p6")
         #expect(geoHash.geoHash.count == input.count / 5)
-    }
-
-    @Test
-    func makeFromBinary() async throws {
-        let input = "01101010011010100110"
-
-        let expectedLat = "1000100010"
-        let expectedLng = "0111011101"
-
-        let geoHash = GeoHash(
-            binary: input,
-            precision: .exact(
-                digits: 20
-            )
-        )
         #expect(geoHash.latitudeBits == expectedLat)
         #expect(geoHash.longitudeBits == expectedLng)
     }
