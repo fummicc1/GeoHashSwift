@@ -210,40 +210,61 @@ extension GeoHash {
     }
 
     public func getNeighbors() -> [GeoHash] {
-        let latitudeBits = self.latitudeBits
-        let longitudeBits = self.longitudeBits
+        var maxLatitude = 90.0
+        var minLatitude = -90.0
+        var maxLongitude = 180.0
+        var minLongitude = -180.0
 
-        let north = add(bits: latitudeBits, by: 1)
-        let south = add(bits: latitudeBits, by: -1)
-        let east = add(bits: longitudeBits, by: 1)
-        let west = add(bits: longitudeBits, by: -1)
+        // Calculate the step size based on precision
+        let latStep = 180.0 / pow(2.0, Double(latitudeBits.count))
+        let lngStep = 360.0 / pow(2.0, Double(longitudeBits.count))
 
-        let northEast = combineBits(latitude: north, longitude: east)
-        let northWest = combineBits(latitude: north, longitude: west)
-        let southEast = combineBits(latitude: south, longitude: east)
-        let southWest = combineBits(latitude: south, longitude: west)
+        // Decode current position
+        for (i, bit) in binary.enumerated() {
+            if i % 2 == 0 {
+                let mid = (minLongitude + maxLongitude) / 2
+                if bit == "1" {
+                    minLongitude = mid
+                } else {
+                    maxLongitude = mid
+                }
+            } else {
+                let mid = (minLatitude + maxLatitude) / 2
+                if bit == "1" {
+                    minLatitude = mid
+                } else {
+                    maxLatitude = mid
+                }
+            }
+        }
+
+        // Calculate center coordinates
+        let centerLat = (minLatitude + maxLatitude) / 2
+        let centerLng = (minLongitude + maxLongitude) / 2
+
+        func makeNeighbor(latOffset: Double, lngOffset: Double) -> GeoHash {
+            var newLat = centerLat + (latOffset * latStep)
+            var newLng = centerLng + (lngOffset * lngStep)
+
+            newLat = clampLatitude(newLat)
+            newLng = normalizeLongitude(newLng)
+
+            return GeoHash(
+                latitude: newLat,
+                longitude: newLng,
+                precision: precision
+            )
+        }
 
         return [
-            GeoHash(
-                binary: combineBits(latitude: north, longitude: longitudeBits),
-                precision: precision
-            ),
-            GeoHash(binary: northEast, precision: precision),
-            GeoHash(
-                binary: combineBits(latitude: latitudeBits, longitude: east),
-                precision: precision
-            ),
-            GeoHash(binary: southEast, precision: precision),
-            GeoHash(
-                binary: combineBits(latitude: south, longitude: longitudeBits),
-                precision: precision
-            ),
-            GeoHash(binary: southWest, precision: precision),
-            GeoHash(
-                binary: combineBits(latitude: latitudeBits, longitude: west),
-                precision: precision
-            ),
-            GeoHash(binary: northWest, precision: precision),
+            makeNeighbor(latOffset: 1, lngOffset: 0),  // north
+            makeNeighbor(latOffset: 1, lngOffset: 1),  // northeast
+            makeNeighbor(latOffset: 0, lngOffset: 1),  // east
+            makeNeighbor(latOffset: -1, lngOffset: 1),  // southeast
+            makeNeighbor(latOffset: -1, lngOffset: 0),  // south
+            makeNeighbor(latOffset: -1, lngOffset: -1),  // southwest
+            makeNeighbor(latOffset: 0, lngOffset: -1),  // west
+            makeNeighbor(latOffset: 1, lngOffset: -1),  // northwest
         ]
     }
 
@@ -277,37 +298,67 @@ extension GeoHash {
         return result
     }
 
+    private func normalizeLongitude(_ lng: Double) -> Double {
+        var normalized = lng
+        while normalized > 180.0 {
+            normalized -= 360.0
+        }
+        while normalized < -180.0 {
+            normalized += 360.0
+        }
+        return normalized
+    }
+
+    private func clampLatitude(_ lat: Double) -> Double {
+        return min(90.0, max(-90.0, lat))
+    }
+
     public func getBound() -> [GeoHashCoordinate2D] {
-        let baseGeoCoordinate = coordinate
-        let precision = precision
+        var maxLatitude = 90.0
+        var minLatitude = -90.0
+        var maxLongitude = 180.0
+        var minLongitude = -180.0
 
-        let latitudeBits = precision.rawValue / 2
-        let longitudeBits = (precision.rawValue + 1) / 2
+        for (index, bit) in binary.enumerated() {
+            if index % 2 == 0 {
+                // longitude bits
+                let mid = (minLongitude + maxLongitude) / 2
+                if bit == "1" {
+                    minLongitude = mid
+                } else {
+                    maxLongitude = mid
+                }
+            } else {
+                // latitude bits
+                let mid = (minLatitude + maxLatitude) / 2
+                if bit == "1" {
+                    minLatitude = mid
+                } else {
+                    maxLatitude = mid
+                }
+            }
+        }
 
-        let latitudeRange = 180.0  // 90 - (-90)
-        let latitudeDelta = latitudeRange / pow(2.0, Double(latitudeBits))
-
-        let longitudeRange = 360.0  // 180 - (-180)
-        let longitudeDelta = longitudeRange / pow(2.0, Double(longitudeBits))
-
-        let longitude = baseGeoCoordinate.longitude
-        let latitude = baseGeoCoordinate.latitude
+        maxLatitude = clampLatitude(maxLatitude)
+        minLatitude = clampLatitude(minLatitude)
+        maxLongitude = normalizeLongitude(maxLongitude)
+        minLongitude = normalizeLongitude(minLongitude)
 
         let topLeft = GeoHashCoordinate2D(
-            latitude: latitude + latitudeDelta,
-            longitude: longitude
+            latitude: maxLatitude,
+            longitude: minLongitude
         )
         let topRight = GeoHashCoordinate2D(
-            latitude: latitude + latitudeDelta,
-            longitude: longitude + longitudeDelta
+            latitude: maxLatitude,
+            longitude: maxLongitude
         )
         let bottomRight = GeoHashCoordinate2D(
-            latitude: latitude,
-            longitude: longitude + longitudeDelta
+            latitude: minLatitude,
+            longitude: maxLongitude
         )
         let bottomLeft = GeoHashCoordinate2D(
-            latitude: latitude,
-            longitude: longitude
+            latitude: minLatitude,
+            longitude: minLongitude
         )
 
         return [topLeft, topRight, bottomRight, bottomLeft]
