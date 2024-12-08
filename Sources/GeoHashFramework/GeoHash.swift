@@ -210,33 +210,12 @@ extension GeoHash {
     }
 
     public func getNeighbors() -> [GeoHash] {
-        var maxLatitude = 90.0
-        var minLatitude = -90.0
-        var maxLongitude = 180.0
-        var minLongitude = -180.0
-
         // Calculate the step size based on precision
         let latStep = 180.0 / pow(2.0, Double(latitudeBits.count))
         let lngStep = 360.0 / pow(2.0, Double(longitudeBits.count))
 
         // Decode current position
-        for (i, bit) in binary.enumerated() {
-            if i % 2 == 0 {
-                let mid = (minLongitude + maxLongitude) / 2
-                if bit == "1" {
-                    minLongitude = mid
-                } else {
-                    maxLongitude = mid
-                }
-            } else {
-                let mid = (minLatitude + maxLatitude) / 2
-                if bit == "1" {
-                    minLatitude = mid
-                } else {
-                    maxLatitude = mid
-                }
-            }
-        }
+        let (minLatitude, maxLatitude, minLongitude, maxLongitude) = getBound(binary: binary)
 
         // Calculate center coordinates
         let centerLat = (minLatitude + maxLatitude) / 2
@@ -266,6 +245,38 @@ extension GeoHash {
             makeNeighbor(latOffset: 0, lngOffset: -1),  // west
             makeNeighbor(latOffset: 1, lngOffset: -1),  // northwest
         ]
+    }
+    
+    private func getBound(binary: String) -> (
+        minLatitude: Double,
+        maxLatitude: Double,
+        minLongitude: Double,
+        maxLongitude: Double
+    ) {
+        var maxLatitude = 90.0
+        var minLatitude = -90.0
+        var maxLongitude = 180.0
+        var minLongitude = -180.0
+        for (index, bit) in binary.enumerated() {
+            if index % 2 == 0 {
+                // longitude bits
+                let mid = (minLongitude + maxLongitude) / 2
+                if bit == "1" {
+                    minLongitude = mid
+                } else {
+                    maxLongitude = mid
+                }
+            } else {
+                // latitude bits
+                let mid = (minLatitude + maxLatitude) / 2
+                if bit == "1" {
+                    minLatitude = mid
+                } else {
+                    maxLatitude = mid
+                }
+            }
+        }
+        return (minLatitude, maxLatitude, minLongitude, maxLongitude)
     }
 
     /// Add `delta` to `bits`
@@ -314,30 +325,8 @@ extension GeoHash {
     }
 
     public func getBound() -> [GeoHashCoordinate2D] {
-        var maxLatitude = 90.0
-        var minLatitude = -90.0
-        var maxLongitude = 180.0
-        var minLongitude = -180.0
-
-        for (index, bit) in binary.enumerated() {
-            if index % 2 == 0 {
-                // longitude bits
-                let mid = (minLongitude + maxLongitude) / 2
-                if bit == "1" {
-                    minLongitude = mid
-                } else {
-                    maxLongitude = mid
-                }
-            } else {
-                // latitude bits
-                let mid = (minLatitude + maxLatitude) / 2
-                if bit == "1" {
-                    minLatitude = mid
-                } else {
-                    maxLatitude = mid
-                }
-            }
-        }
+        
+        var (minLatitude, maxLatitude, minLongitude, maxLongitude) = getBound(binary: binary)
 
         maxLatitude = clampLatitude(maxLatitude)
         minLatitude = clampLatitude(minLatitude)
