@@ -77,11 +77,8 @@ struct GeoHashTests {
 
     @Test
     func getBounds() async throws {
-        let actual = GeoHash.getBounds(with: .exact(digits: 15))
-        let count = actual.reduce(0) { partialResult, bound in
-            partialResult + bound.count
-        }
-        print(count == 131072)  // 2^15 * 4
+        let actual = GeoHash.getBounds(with: .exact(digits: 20))
+        #expect(actual.count == 1048576) // 2 ** 20
     }
 
     @Test
