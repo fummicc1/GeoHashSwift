@@ -3,6 +3,8 @@
 
 import Foundation
 
+internal let runtimeWarning = RuntimeWarning()
+
 public struct GeoHash: Sendable, Hashable {
     public private(set) var precision: GeoHashBitsPrecision
     public private(set) var coordinate: GeoHashCoordinate2D
@@ -18,20 +20,31 @@ public struct GeoHash: Sendable, Hashable {
     /// Assure that all characters in the string are "0" or "1".
     ///
     /// - Parameter value: A string that contains only "0" or "1".
-    public init(
+    public init?(
         binary: String,
         precision: GeoHashBitsPrecision = .mid
     ) {
-        precondition(
-            binary.allSatisfy({
-                ["0", "1"].contains($0)
-            })
-        )
+        let isValidBinary = binary.allSatisfy({
+            ["0", "1"].contains($0)
+        })
+        if !isValidBinary {
+            Task {
+                await runtimeWarning.log(
+                    message: "Binary string must contain only '0' or '1'."
+                )
+            }
+            return nil
+        }
         if binary.count != precision.rawValue {
-            precondition(
-                binary.count == precision.rawValue,
-                "Binary length must be \(precision.rawValue), but binary length is \(binary.count)"
-            )
+            let isSameLength = binary.count == precision.rawValue
+            if !isSameLength {
+                Task {
+                    await runtimeWarning.log(
+                        message: "Binary length must be %d, but binary length is %d",
+                        args: precision.rawValue, binary.count
+                    )
+                }
+            }
         }
         self.binary = binary
         self.precision = precision
@@ -41,19 +54,27 @@ public struct GeoHash: Sendable, Hashable {
         )
     }
 
-    public init(
+    public init?(
         latitude: Double,
         longitude: Double,
         precision: GeoHashBitsPrecision = .mid
     ) {
-        precondition(
-            latitude >= -90 && latitude <= 90,
-            "Latitude must be between -90 and 90"
-        )
-        precondition(
-            longitude >= -180 && longitude <= 180,
-            "Longitude must be between -180 and 180"
-        )
+        if latitude >= 90 || latitude <= -90 {
+            Task {
+                await runtimeWarning.log(
+                    message: "Latitude must be between -90 and 90"
+                )
+            }
+            return nil
+        }
+        if longitude >= 180 || longitude <= -180 {
+            Task {
+                await runtimeWarning.log(
+                    message: "Longitude must be between -180 and 180"
+                )
+            }
+            return nil
+        }
 
         self.init(
             binary: Self.makeBinary(
@@ -67,7 +88,7 @@ public struct GeoHash: Sendable, Hashable {
         )
     }
 
-    public init(geoHash: String, precision: GeoHashBitsPrecision = .mid) {
+    public init?(geoHash: String, precision: GeoHashBitsPrecision = .mid) {
         self.init(
             binary: Self.makeBinary(
                 from: geoHash,
@@ -88,9 +109,13 @@ extension GeoHash {
 
         for char in geoHash {
             guard let index = Self.base32Chars.firstIndex(of: char) else {
-                preconditionFailure(
-                    "Invalid geohash character \(char) in geoHash: \(geoHash)"
-                )
+                Task {
+                    await runtimeWarning.log(
+                        message: "Invalid geohash character %s in geoHash: %s",
+                        args: String(char), geoHash
+                    )
+                }
+                continue
             }
 
             let value = Self.base32Chars.distance(
@@ -237,7 +262,7 @@ extension GeoHash {
                 latitude: newLat,
                 longitude: newLng,
                 precision: precision
-            )
+            )!
         }
 
         return [
@@ -363,7 +388,7 @@ extension GeoHash {
         let bound = GeoHash(
             binary: String(repeating: "0", count: precision.rawValue),
             precision: precision
-        ).getBound()
+        )!.getBound()
 
         let latitudeDelta = bound[0].latitude - bound[3].latitude
         let longitudeDelta = bound[1].longitude - bound[0].longitude

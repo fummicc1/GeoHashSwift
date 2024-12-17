@@ -29,7 +29,7 @@ struct GeoHashCLI: ParsableCommand {
         )
         let precision = GeoHashBitsPrecision.exact(digits: length * 5)
         
-        let geoHash: GeoHash
+        let geoHash: GeoHash?
         
         if let coordinate {
             let components = coordinate.split(separator: ",")
@@ -53,6 +53,6 @@ struct GeoHashCLI: ParsableCommand {
         } else {
             throw ValidationError("Coordinate or latitude and longitude must be provided.")
         }
-        print(geoHash.geoHash)
+        print(geoHash?.geoHash ?? "Invalid GeoHash")
     }
 }
