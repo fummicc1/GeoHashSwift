@@ -109,9 +109,13 @@ extension GeoHash {
 
         for char in geoHash {
             guard let index = Self.base32Chars.firstIndex(of: char) else {
-                preconditionFailure(
-                    "Invalid geohash character \(char) in geoHash: \(geoHash)"
-                )
+                Task {
+                    await runtimeWarning.log(
+                        message: "Invalid geohash character %s in geoHash: %s",
+                        args: String(char), geoHash
+                    )
+                }
+                continue
             }
 
             let value = Self.base32Chars.distance(
