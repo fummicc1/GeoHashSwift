@@ -97,8 +97,13 @@ extension GeoHash {
                 from: Self.base32Chars.startIndex,
                 to: index
             )
-            let bits = String(format: precision.format, value)
-            binary += bits
+            let bits = String(value, radix: 2)
+            if bits.count < 5 {
+                let padding = String(repeating: "0", count: 5 - bits.count)
+                binary += padding + bits
+            } else {
+                binary += bits
+            }
         }
         return binary
     }
