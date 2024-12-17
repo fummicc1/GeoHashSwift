@@ -39,6 +39,18 @@ struct GeoHashTests {
             geoHash.geoHash == "xn76urwe"
         )
     }
+    
+    @Test
+    func makeGeoHashFromGeoHashString() async throws {
+        let geoHashString = "xn76urwe"
+        let geoHash = GeoHash(
+            geoHash: geoHashString,
+            precision: .exact(
+                digits: geoHashString.count * 5
+            )
+        )
+        #expect(geoHash.geoHash == geoHashString)
+    }
 
     @Test
     func getBound() async throws {
