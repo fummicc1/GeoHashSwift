@@ -225,8 +225,8 @@ extension GeoHash {
             var newLat = centerLat + (latOffset * latStep)
             var newLng = centerLng + (lngOffset * lngStep)
 
-            newLat = clampLatitude(newLat)
-            newLng = normalizeLongitude(newLng)
+            newLat = clamp(latitude: newLat)
+            newLng = normalize(longitude: newLng)
 
             return GeoHash(
                 latitude: newLat,
@@ -246,7 +246,7 @@ extension GeoHash {
             makeNeighbor(latOffset: 1, lngOffset: -1),  // northwest
         ]
     }
-    
+
     private func getBound(binary: String) -> (
         minLatitude: Double,
         maxLatitude: Double,
@@ -309,8 +309,8 @@ extension GeoHash {
         return result
     }
 
-    private func normalizeLongitude(_ lng: Double) -> Double {
-        var normalized = lng
+    private func normalize(longitude: Double) -> Double {
+        var normalized = longitude
         while normalized > 180.0 {
             normalized -= 360.0
         }
@@ -320,18 +320,18 @@ extension GeoHash {
         return normalized
     }
 
-    private func clampLatitude(_ lat: Double) -> Double {
-        return min(90.0, max(-90.0, lat))
+    private func clamp(latitude: Double) -> Double {
+        return min(90.0, max(-90.0, latitude))
     }
 
     public func getBound() -> [GeoHashCoordinate2D] {
-        
+
         var (minLatitude, maxLatitude, minLongitude, maxLongitude) = getBound(binary: binary)
 
-        maxLatitude = clampLatitude(maxLatitude)
-        minLatitude = clampLatitude(minLatitude)
-        maxLongitude = normalizeLongitude(maxLongitude)
-        minLongitude = normalizeLongitude(minLongitude)
+        maxLatitude = clamp(latitude: maxLatitude)
+        minLatitude = clamp(latitude: minLatitude)
+        maxLongitude = normalize(longitude: maxLongitude)
+        minLongitude = normalize(longitude: minLongitude)
 
         let topLeft = GeoHashCoordinate2D(
             latitude: maxLatitude,
