@@ -18,7 +18,7 @@ struct GeoHashTests {
         let geoHash = GeoHash(
             binary: input,
             precision: .exact(digits: 20)
-        )
+        )!
         #expect(geoHash.geoHash == "e9p6")
         #expect(geoHash.geoHash.count == input.count / 5)
         #expect(geoHash.latitudeBits == expectedLat)
@@ -31,7 +31,7 @@ struct GeoHashTests {
         let lat = 35.681382
         let lng = 139.766084
 
-        let geoHash = GeoHash(latitude: lat, longitude: lng)
+        let geoHash = GeoHash(latitude: lat, longitude: lng)!
         #expect(
             geoHash.binary == "1110110100001110011011010101111110001101"
         )
@@ -48,7 +48,7 @@ struct GeoHashTests {
             precision: .exact(
                 digits: geoHashString.count * 5
             )
-        )
+        )!
         #expect(geoHash.geoHash == geoHashString)
     }
 
@@ -64,7 +64,7 @@ struct GeoHashTests {
             latitude: coordinate.latitude,
             longitude: coordinate.longitude,
             precision: precision
-        )
+        )!
         let actual = geoHash.getBound()
         let expected = [
             GeoHashCoordinate2D(
@@ -110,7 +110,7 @@ struct GeoHashTests {
             "xn76urwk",
         ]
 
-        let geoHash = GeoHash(latitude: lat, longitude: lng)
+        let geoHash = GeoHash(latitude: lat, longitude: lng)!
         let neighbors = geoHash.getNeighbors()
         #expect(neighbors.map(\.geoHash) == expected)
     }
