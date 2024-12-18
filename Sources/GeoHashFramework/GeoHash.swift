@@ -3,8 +3,6 @@
 
 import Foundation
 
-internal let runtimeWarning = RuntimeWarning()
-
 public struct GeoHash: Sendable, Hashable {
     public private(set) var precision: GeoHashBitsPrecision
     public private(set) var coordinate: GeoHashCoordinate2D
@@ -28,22 +26,18 @@ public struct GeoHash: Sendable, Hashable {
             ["0", "1"].contains($0)
         })
         if !isValidBinary {
-            Task {
-                await runtimeWarning.log(
-                    message: "Binary string must contain only '0' or '1'."
-                )
-            }
+            RuntimeWarning.log(
+                message: "Binary string must contain only '0' or '1'."
+            )
             return nil
         }
         if binary.count != precision.rawValue {
             let isSameLength = binary.count == precision.rawValue
             if !isSameLength {
-                Task {
-                    await runtimeWarning.log(
-                        message: "Binary length must be %d, but binary length is %d",
-                        args: precision.rawValue, binary.count
-                    )
-                }
+                RuntimeWarning.log(
+                    message: "Binary length must be %d, but binary length is %d",
+                    args: precision.rawValue, binary.count
+                )
             }
         }
         self.binary = binary
@@ -60,19 +54,15 @@ public struct GeoHash: Sendable, Hashable {
         precision: GeoHashBitsPrecision = .mid
     ) {
         if latitude >= 90 || latitude <= -90 {
-            Task {
-                await runtimeWarning.log(
-                    message: "Latitude must be between -90 and 90"
-                )
-            }
+            RuntimeWarning.log(
+                message: "Latitude must be between -90 and 90"
+            )
             return nil
         }
         if longitude >= 180 || longitude <= -180 {
-            Task {
-                await runtimeWarning.log(
-                    message: "Longitude must be between -180 and 180"
-                )
-            }
+            RuntimeWarning.log(
+                message: "Longitude must be between -180 and 180"
+            )
             return nil
         }
 
@@ -109,12 +99,10 @@ extension GeoHash {
 
         for char in geoHash {
             guard let index = Self.base32Chars.firstIndex(of: char) else {
-                Task {
-                    await runtimeWarning.log(
-                        message: "Invalid geohash character %s in geoHash: %s",
-                        args: String(char), geoHash
-                    )
-                }
+                RuntimeWarning.log(
+                    message: "Invalid geohash character %s in geoHash: %s",
+                    args: String(char), geoHash
+                )
                 continue
             }
 
