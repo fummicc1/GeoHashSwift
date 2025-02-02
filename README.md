@@ -10,13 +10,13 @@ GeoHashSwift is a Swift implementation of GeoHash.
 
 ### GeoHashFramework
 
-GeoHashFramework is a framework for GeoHash.
+GeoHashFramework is a framework that ships things to calculate GeoHash from coordinates.
 
 You can use it as a dependency of your project.
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fummicc1/GeoHashSwift.git", from: "0.0.1")
+    .package(url: "https://github.com/fummicc1/GeoHashSwift.git", from: "0.0.4")
 ]
 ```
 
@@ -29,9 +29,9 @@ print(geoHash.geoHash) // "xn76urwe"
 
 ### GeoHashCLI
 
-GeoHashCLI executable is a CLI tool for GeoHash.
+GeoHashCLI executable is a CLI tool which depends on GeoHashFramework.
 
-You can use it to generate GeoHash from latitude and longitude.
+You can use this executable to generate GeoHash from coordinates.
 
 - Install via Homebrew
 
@@ -55,7 +55,7 @@ geohash --coordinate "35.681236,139.767125"
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fummicc1/GeoHashSwift.git", from: "0.0.1")
+    .package(url: "https://github.com/fummicc1/GeoHashSwift.git", from: "0.0.4")
 ]
 ```
 
@@ -78,55 +78,21 @@ swift run geohash --coordinate "35.681236,139.767125"
 
 A GeoHash is a GeoHash object.
 
-You can retrieve both binary and hex values of coordinate.
+You can obtain both binary and hex values of coordinate from GeoHash object.
 
 More implementation related to Coordinate2D (latitude, longitude) is in GeoHashCoordinate2D.swift.
+
+Beside the calculation of GeoHash, this object also provides the followings:
+
+- a method to get bounds of the GeoHash.
+- a method to get neighbors of the GeoHash with bits precision same.
+
 
 #### GeoHashCoordinate2D
 
 A GeoHashCoordinate2D represents a pair of latitude and longitude in binary.
 
-Note that actual latitude and longitude are not stored in this object, because the accuracy of GeoHash is not guaranteed in spite of the introduction of store of binary integer.
-
-### GeoHashCluster
-
-A GeoHashCluster is a union-find data structure for GeoHash.
-
-This object aims to store GeoHash and their relations.
-
-```mermaid
-classDiagram
-
-    class GeoHashPrecision {
-        <<Enumeration>>
-        low
-        mid
-        high
-        exact(digits: Int)
-    }
-
-    class GeoHashCluster {
-        <<union-find>>
-        + isSame(geoHash1: GeoHash, geoHash2: GeoHash, precision: GeoHashPrecision) Bool
-        + mergeIfPossible(geoHash1: GeoHash, geoHash2: GeoHash, precision: GeoHashPrecision)
-    }
-
-    class GeoHash {
-        + binary: String
-        + geoHash: String
-        + precision: GeoHashPrecision
-        + latitudeBits: [Int]
-        + longitudeBits: [Int]
-        + init(latitude: Double, longitude: Double, precision: GeoHashPrecision)
-        + init(binary: String, precision: GeoHashPrecision)
-        + init(geoHash: String)
-        + getBounds(with precision: GeoHashBitsPrecision) -> [[GeoHashCoordinate2D]]
-    }
-    class GeoHashCoordinate2D {
-        + latitude: Double
-        + longitude: Double
-    }
-```
+**Note that actual latitude and longitude are not stored in this object, because the accuracy of GeoHash is not guaranteed.**
 
 ### Features
 
@@ -135,9 +101,8 @@ classDiagram
   - binary string
   - GeoHash string
 - User can retrieve hash string from `GeoHash` object.
-- User can check if two GeoHash objects are in the same cluster with specified precision.
-- User can fetch GeoHashes in the same cluster with specified GeoHash.
-
+- User can obtain bounds of GeoHash.
+- User can obtain neighbors of GeoHash.
 
 ## Related Repositories
 
