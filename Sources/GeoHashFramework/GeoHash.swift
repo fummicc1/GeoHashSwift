@@ -11,7 +11,7 @@ public struct GeoHash: Sendable, Hashable {
     /// Base32 characters used to hash
     ///
     // a, i, l and o are omitted
-    package static let base32Chars = "0123456789bcdefghjkmnpqrstuvwxyz"
+    static let base32Chars = "0123456789bcdefghjkmnpqrstuvwxyz"
 
     /// Create a GeoHash from a string.
     ///
