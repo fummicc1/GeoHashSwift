@@ -124,41 +124,17 @@ extension GeoHash {
     static func makeBinary(from coordinate: GeoHashCoordinate2D, precision: GeoHashBitsPrecision)
         -> String
     {
-        let latitude = coordinate.latitude
-        let longitude = coordinate.longitude
-
-        var maxLatitude = 90.0
-        var minLatitude = -90.0
-        var maxLongitude = 180.0
-        var minLongitude = -180.0
+        var latitudeRange = Interval.latitude
+        var longitudeRange = Interval.longitude
 
         var latitudeBits: [Int] = []
         var longitudeBits: [Int] = []
 
         for bits in 0..<precision.rawValue {
             if bits % 2 == 0 {
-                // longitude
-                let mid = (minLongitude + maxLongitude) / 2
-
-                if longitude >= mid {
-                    longitudeBits.append(1)
-                    minLongitude = mid
-                } else {
-                    longitudeBits.append(0)
-                    maxLongitude = mid
-                }
-
+                longitudeBits.append(longitudeRange.nextBit(for: coordinate.longitude))
             } else {
-                // latitude
-                let mid = (minLatitude + maxLatitude) / 2
-
-                if latitude >= mid {
-                    latitudeBits.append(1)
-                    minLatitude = mid
-                } else {
-                    latitudeBits.append(0)
-                    maxLatitude = mid
-                }
+                latitudeBits.append(latitudeRange.nextBit(for: coordinate.latitude))
             }
         }
         var binary = ""
@@ -169,6 +145,38 @@ extension GeoHash {
             binary += "\(longitudeBits.last!)"
         }
         return binary
+    }
+
+    /// A closed range that is repeatedly halved while encoding or decoding
+    /// geohash bits.
+    struct Interval {
+        var lowerBound: Double
+        var upperBound: Double
+
+        static let latitude = Interval(lowerBound: -90, upperBound: 90)
+        static let longitude = Interval(lowerBound: -180, upperBound: 180)
+
+        private var mid: Double { (lowerBound + upperBound) / 2 }
+
+        /// Returns the geohash bit for `value` and narrows the interval to
+        /// the half that contains it.
+        mutating func nextBit(for value: Double) -> Int {
+            if value >= mid {
+                lowerBound = mid
+                return 1
+            }
+            upperBound = mid
+            return 0
+        }
+
+        /// Narrows the interval to the half selected by an existing bit.
+        mutating func narrow(toUpperHalf: Bool) {
+            if toUpperHalf {
+                lowerBound = mid
+            } else {
+                upperBound = mid
+            }
+        }
     }
 }
 
@@ -271,30 +279,19 @@ extension GeoHash {
         minLongitude: Double,
         maxLongitude: Double
     ) {
-        var maxLatitude = 90.0
-        var minLatitude = -90.0
-        var maxLongitude = 180.0
-        var minLongitude = -180.0
+        var latitudeRange = Interval.latitude
+        var longitudeRange = Interval.longitude
         for (index, bit) in binary.enumerated() {
             if index % 2 == 0 {
-                // longitude bits
-                let mid = (minLongitude + maxLongitude) / 2
-                if bit == "1" {
-                    minLongitude = mid
-                } else {
-                    maxLongitude = mid
-                }
+                longitudeRange.narrow(toUpperHalf: bit == "1")
             } else {
-                // latitude bits
-                let mid = (minLatitude + maxLatitude) / 2
-                if bit == "1" {
-                    minLatitude = mid
-                } else {
-                    maxLatitude = mid
-                }
+                latitudeRange.narrow(toUpperHalf: bit == "1")
             }
         }
-        return (minLatitude, maxLatitude, minLongitude, maxLongitude)
+        return (
+            latitudeRange.lowerBound, latitudeRange.upperBound,
+            longitudeRange.lowerBound, longitudeRange.upperBound
+        )
     }
 
     /// Add `delta` to `bits`

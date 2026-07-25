@@ -27,10 +27,10 @@ jobs:
           version: "1.2.0"
           paths: Sources
           threshold: "10"
-          # Report-only for now: violations appear in the Security tab and as
-          # PR annotations without failing the build. Set to "true" (or raise
-          # the threshold) to enforce a hard gate.
-          fail-on-threshold: "false"
+          # Hard gate: the build fails when any function reaches the
+          # threshold. Suppress intentional complexity inline with
+          # `// swift-complexity:disable` instead of loosening this.
+          fail-on-threshold: "true"
 
       - name: Upload SARIF to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
