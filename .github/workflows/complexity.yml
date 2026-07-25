@@ -1,0 +1,39 @@
+name: Complexity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  complexity:
+    name: Analyze Complexity
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analyze complexity
+        id: analysis
+        uses: fummicc1/swift-complexity@v1.2.0
+        with:
+          # Pinned explicitly: "latest" resolves to 1.1.0 while v1.2.0 is a
+          # pre-release, and only 1.2.0+ ships self-contained Linux binaries.
+          version: "1.2.0"
+          paths: Sources
+          threshold: "10"
+          # Report-only for now: violations appear in the Security tab and as
+          # PR annotations without failing the build. Set to "true" (or raise
+          # the threshold) to enforce a hard gate.
+          fail-on-threshold: "false"
+
+      - name: Upload SARIF to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ${{ steps.analysis.outputs.report-file }}
