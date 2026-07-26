@@ -20,11 +20,10 @@ jobs:
 
       - name: Analyze complexity
         id: analysis
-        uses: fummicc1/swift-complexity@v1.2.0
+        # v1 tracks the latest stable v1.x release, and the default
+        # `version: latest` input follows the latest released binaries.
+        uses: fummicc1/swift-complexity@v1
         with:
-          # Pinned explicitly: "latest" resolves to 1.1.0 while v1.2.0 is a
-          # pre-release, and only 1.2.0+ ships self-contained Linux binaries.
-          version: "1.2.0"
           paths: Sources
           threshold: "10"
           # Hard gate: the build fails when any function reaches the
